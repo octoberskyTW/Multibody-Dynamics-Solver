@@ -1,55 +1,48 @@
 #include "pendulum.hpp"
 
 pendulum::pendulum(double L, double m, double I, double ang) :
-    M(3, 3, 0.0), J(3, 3, 0.0), ROT(3, 3, 0.0), POS(3, 0.0), VEL(3, 0.0), ACC(3, 0.0), F(3, 0.0),
-    T(3, 0.0), ANG(3, 0.0), ANG_VEL(3, 0.0), ANG_ACC(3, 0.0), PHI_Q(6, 6, 0.0), Gamma(6, 0.0) {
+    M(3, 3, arma::fill::zeros), ROT(2, 2, arma::fill::zeros), POS(2, arma::fill::zeros), VEL(2, arma::fill::zeros), ACC(2, arma::fill::zeros), F(2, arma::fill::zeros),
+    T(1, arma::fill::zeros), ANG(1, arma::fill::zeros), ANG_VEL(1, arma::fill::zeros), ANG_ACC(1, arma::fill::zeros), PHI_Q(2, 3, arma::fill::zeros), Gamma(2, arma::fill::zeros), Q(5, arma::fill::zeros),
+    state_var(6, arma::fill::zeros) {
 
-        POS(2) = L;
+        POS(1) = L;
 
-        ANG(1) = ang;
+        ANG(0) = ang;
 
-        F(2) = m * 9.81;
+        F(1) = m * 9.81;
 
-        ANG_VEL(1) = 10.0;
+        ANG_VEL(0) = 0.0;
 
-        for (unsigned int i = 0; i < POS.size(); ++i)
-        {
+        for (unsigned int i = 0; i < POS.size(); ++i) {
             M(i, i) = m;
-            J(i, i) = I;
         }
 
+        M(2, 2) = I;
+
         build_TM(ANG, ROT);
-        POS = prod(trans(ROT), POS);
-        matrix<double> tmp(3, 3, 0.0);
-        vector<double> tmp_v(3, 0.0);
-        tmp_v = prod(J, ANG_VEL);
-        tmp = build_cross(ANG_VEL);
-        T = prod(build_cross(POS), F) - prod(J, ANG_ACC) - prod(tmp, tmp_v);
+        POS = trans(ROT) * POS;
+
+        T = 0.0;
+        Q = join_cols(F, T);
+        dt = 0.001;
+
+        state_var = join_cols(join_cols(POS, ANG), join_cols(VEL, ANG_VEL));
 }
 
-void pendulum::build_TM(const vector<double> &angle, matrix<double> &TM) {
-    double spsi = sin(angle(2));
-    double cpsi = cos(angle(2));
-    double stht = sin(angle(1));
-    double ctht = cos(angle(1));
-    double sphi = sin(angle(0));
-    double cphi = cos(angle(0));
+void pendulum::build_TM(const arma::vec &angle, arma::mat &TM) {
+    double sang = sin(angle(0));
+    double cang = cos(angle(0));
 
-    TM(0, 0) = cpsi * ctht;
-    TM(1, 0) = cpsi * stht * sphi - spsi * cphi;
-    TM(2, 0) = cpsi * stht * cphi + spsi * sphi;
-    TM(0, 1) = spsi * ctht;
-    TM(1, 1) = spsi * stht * sphi + cpsi * cphi;
-    TM(2, 1) = spsi * stht * cphi - cpsi * sphi;
-    TM(0, 2) = -stht;
-    TM(1, 2) = ctht * sphi;
-    TM(2, 2) = ctht * cphi;
+    TM(0, 0) = cang;
+    TM(0, 1) = -sang;
+    TM(1, 0) = sang;
+    TM(1, 1) = cang;
 
     return;
 }
 
-matrix<double> pendulum::build_cross(const vector<double> &vec) {
-    matrix<double> tmp(3, 3, 0.0);
+arma::mat pendulum::build_cross(const arma::vec &vec) {
+    arma::mat tmp(3, 3, arma::fill::zeros);
 
     tmp(0, 1) = -vec(2);
     tmp(0, 2) = vec(1);
@@ -61,33 +54,59 @@ matrix<double> pendulum::build_cross(const vector<double> &vec) {
     return tmp;
 }
 
-void pendulum::pendulum_sys(vector<double> &x, vector<double> &dx, const double ) {
+void pendulum::sys (const arma::vec &x, arma::vec &dx) {
 
-    for (unsigned int i = 0; i < PHI_Q.size1(); ++i)
-    {
-        PHI_Q(i, i) = 1.0;
-    }
+    PHI_Q(0, 0) = 1.0;
+    PHI_Q(0, 1) = 0.0;
+    PHI_Q(0, 2) = sqrt(x(0) * x(0) + x(1) * x(1)) * sin(x(2));
+    PHI_Q(1, 0) = 0.0;
+    PHI_Q(1, 1) = 1.0;
+    PHI_Q(1, 2) = -sqrt(x(0) * x(0) + x(1) * x(1)) * cos(x(2));
 
-    PHI_Q(0, 4) = -norm_2(POS) * cos(ANG(1));
-    PHI_Q(1, 4) = norm_2(POS) * sin(ANG(1));
+    Gamma(0) = -sqrt(x(0) * x(0) + x(1) * x(1)) * cos(x(2)) * x(5) * x(5);
+    Gamma(1) = -sqrt(x(0) * x(0) + x(1) * x(1)) * sin(x(2)) * x(5) * x(5);
 
-    Gamma(0) = norm_2(POS) * sin(ANG(1)) * ANG_VEL(1) * ANG_VEL(1);
-    Gamma(1) = norm_2(POS) * cos(ANG(1)) * ANG_VEL(1) * ANG_VEL(1);
+    arma::mat A;
+    arma::mat tmp(2, 2, arma::fill::zeros);
 
-    matrix<double> tmp_m(6, 6, 0.0);
+    A = join_cols(join_rows(M, trans(PHI_Q)), join_rows(PHI_Q, tmp));
 
-    InvertMatrix(PHI_Q, tmp_m);
+    Q = join_cols(join_cols(F, T), Gamma);
 
-    for (int i = 0; i < tmp_m.size1(); ++i)
-    {
-        std::cout << tmp_m(i, 0) << '\t' << tmp_m(i, 1) << '\t' << tmp_m(i, 2) << '\t' << tmp_m(i, 3) << '\t' << tmp_m(i, 4) << '\t' << tmp_m(i, 5) << "|" << Gamma(i) << std::endl;
-    }
+    arma::vec tmp_v(5, arma::fill::zeros);
+    tmp_v = solve(A, Q);
 
-    vector<double> tmp_v(6, 0.0);
+    dx(0) = x(3);
+    dx(1) = x(4);
+    dx(2) = x(5);
+    dx(3) = tmp_v(0);
+    dx(4) = tmp_v(1);
+    dx(5) = tmp_v(2);
+}
 
-    tmp_v = prod(tmp_m, Gamma);
+void pendulum::integrator() {
+    unsigned int n_elements = state_var.size();
+    arma::vec xx(n_elements, arma::fill::zeros);
+    arma::vec dx1(n_elements, arma::fill::zeros);
+    arma::vec dx2(n_elements, arma::fill::zeros);
+    arma::vec dx3(n_elements, arma::fill::zeros);
+    arma::vec dx4(n_elements, arma::fill::zeros);
 
-    std::cout << tmp_v(0) << '\t' << tmp_v(1) << '\t' << tmp_v(2) << '\t' << tmp_v(3) << '\t' << tmp_v(4) << '\t' << tmp_v(5) << std::endl;
+    xx = state_var;
 
-    x = tmp_v;
+    sys(xx, dx1);
+
+    xx = state_var + dx1 * 0.5 * dt;
+
+    sys(xx, dx2);
+
+    xx = state_var + dx2 * 0.5 * dt;
+
+    sys(xx, dx3);
+
+    xx = state_var + dx3 * dt;
+
+    sys(xx, dx4);
+
+    state_var = state_var + (dt / 6.0) * (dx1 + 2.0 * dx2+ 2.0 * dx3 + dx4);
 }

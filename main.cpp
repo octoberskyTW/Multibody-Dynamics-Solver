@@ -3,20 +3,27 @@
 #include <iostream>
 
 using namespace boost::numeric::ublas;
-using namespace boost::numeric::odeint;
+
 
 int main(int argc, char const *argv[])
 {
-    double dt(0.001);
-
     double t(0.0);
 
-    vector<double> X(6, 0.0);
-    vector<double> DX(6, 0.0);
+    std::fstream fout;
 
-    pendulum A(10.0, 5.0, 1.0, 45.0 * 3.14 / 180.0);
+    fout.open("test.txt", std::ios::out);
 
-    A.pendulum_sys(X, DX, t);
-    // std::cout << X(3) << '\t' << X(4) << '\t' << X(5) << std::endl;
+    fout << "Time" << '\t' << "X" << '\t' << "Y" << '\t' << "ANG" << std::endl;
+
+    pendulum *A = new pendulum(1.0, 1.0, 1.0, 45.0 * 3.14 / 180.0);
+
+    for (int i = 0; i < 100000; ++i)
+    {
+        A->integrator();
+        t += A->dt;
+        fout << t << '\t' << A->state_var(0) << '\t' << A->state_var(1) << '\t' << A->state_var(2) << std::endl;
+    }
+
+    fout.close();
     return 0;
 }
