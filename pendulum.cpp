@@ -58,13 +58,13 @@ void pendulum::sys (const arma::vec &x, arma::vec &dx) {
 
     PHI_Q(0, 0) = 1.0;
     PHI_Q(0, 1) = 0.0;
-    PHI_Q(0, 2) = sqrt(x(0) * x(0) + x(1) * x(1)) * sin(x(2));
+    PHI_Q(0, 2) = -sqrt(x(0) * x(0) + x(1) * x(1)) * cos(x(2));
     PHI_Q(1, 0) = 0.0;
     PHI_Q(1, 1) = 1.0;
-    PHI_Q(1, 2) = -sqrt(x(0) * x(0) + x(1) * x(1)) * cos(x(2));
+    PHI_Q(1, 2) = sqrt(x(0) * x(0) + x(1) * x(1)) * sin(x(2));
 
-    Gamma(0) = -sqrt(x(0) * x(0) + x(1) * x(1)) * cos(x(2)) * x(5) * x(5);
-    Gamma(1) = -sqrt(x(0) * x(0) + x(1) * x(1)) * sin(x(2)) * x(5) * x(5);
+    Gamma(0) = -sqrt(x(0) * x(0) + x(1) * x(1)) * sin(x(2)) * x(5) * x(5);
+    Gamma(1) = -sqrt(x(0) * x(0) + x(1) * x(1)) * cos(x(2)) * x(5) * x(5);
 
     arma::mat A;
     arma::mat tmp(2, 2, arma::fill::zeros);

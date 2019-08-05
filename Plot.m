@@ -1,3 +1,5 @@
+clear all;
+[Time,X,Y,ANG] = importfile('test.txt');
 h = figure;
 hh2 = plot([0, X(1, 1)], [0,-Y(1, 1)], ...
 '.-', 'MarkerSize', 20, 'LineWidth', 2);
@@ -16,9 +18,9 @@ for i = 1:200:n_elements
    im = frame2im(frame); 
    [imind,cm] = rgb2ind(im,256); 
    % Write to the GIF File 
-   if i == 1 
-       imwrite(imind,cm,filename,'gif', 'Loopcount',inf); 
-   else 
-       imwrite(imind,cm,filename,'gif','WriteMode','append'); 
-   end 
+%    if i == 1 
+%        imwrite(imind,cm,filename,'gif', 'Loopcount',inf); 
+%    else 
+%        imwrite(imind,cm,filename,'gif','WriteMode','append'); 
+%    end 
 end

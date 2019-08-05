@@ -15,7 +15,7 @@ int main(int argc, char const *argv[])
 
     fout << "Time" << '\t' << "X" << '\t' << "Y" << '\t' << "ANG" << std::endl;
 
-    pendulum *A = new pendulum(1.0, 1.0, 1.0, 45.0 * 3.14 / 180.0);
+    pendulum *A = new pendulum(1.0, 1.0, 1.0, 180.0 * 3.14 / 180.0);
 
     for (int i = 0; i < 100000; ++i)
     {
