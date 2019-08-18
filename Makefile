@@ -12,8 +12,10 @@ OBJS = $(patsubst $(SRC)/%.cpp, %.o, $(wildcard $(SRC)/*.cpp))
 OBJS := $(addprefix $(OUT)/,$(OBJS))
 deps := $(OBJS:%.o=%.o.d)
 
-$(OUT)/%.o: $(SRC)/%.cpp
+$(OUT) :
 	mkdir -p $(OUT)
+
+$(OUT)/%.o: $(SRC)/%.cpp $(OUT)
 	$(CXX) $(CXXFLAGS) -o $@ -MMD -MF $@.d -c $<
 
 $(EXEC): $(OBJS)
