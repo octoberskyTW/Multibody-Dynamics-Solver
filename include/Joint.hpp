@@ -1,0 +1,44 @@
+#ifndef JOINT_HPP
+#define JOINT_HPP
+#include <armadillo>
+#include "Math.hpp"
+#include "Body.hpp"
+
+class Joint
+{
+public:
+    Joint(unsigned int TypeIn, arma::vec piIn, arma::vec pjIn, arma::vec qiIn,
+            arma::vec qjIn, Body *i_In, Body *j_In);
+    ~Joint() {};
+    void Build_C();
+    void Build_Cq();
+    void Build_GAMMA();
+    void update();
+
+    arma::mat get_Cq();
+    arma::vec get_GAMMA();
+
+private:
+    unsigned int Type;  
+    arma::vec pi;
+    arma::vec pj;
+    arma::vec qi;
+    arma::vec qj;
+    arma::mat Cq;
+    arma::vec GAMMA;
+    arma::vec CONSTRAINT;
+    arma::mat TBI_i;
+    arma::mat TBI_j;
+    arma::vec Pi;
+    arma::vec Pj;
+    arma::vec Qi;
+    arma::vec Qj;
+    arma::vec wi;
+    arma::vec wj;
+    arma::vec Si;
+    arma::vec Sj;
+    Body *body_i_ptr;
+    Body *body_j_ptr;
+};
+
+#endif  //JOINT_HPP
