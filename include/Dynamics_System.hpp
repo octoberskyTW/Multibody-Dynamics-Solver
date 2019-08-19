@@ -22,13 +22,15 @@ private:
     unsigned int nbody;
     unsigned int njoint;
     arma::mat SYS_Cq;
-    arma::vec SYS_MAT;
+    arma::mat SYS_MAT;
     arma::vec SYS_C;
     arma::vec SYS_Q;
     arma::vec SYS_GAMMA;
     arma::vec q_dd;
     arma::vec q_d;
     arma::vec q;
+    arma::mat SYS_M;
+
     std::vector<Body *> Body_ptr_array;
     std::vector<Joint *> Joint_ptr_array; 
 };

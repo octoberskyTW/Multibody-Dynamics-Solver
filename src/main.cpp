@@ -46,6 +46,7 @@ int main(int argc, char const *argv[])
 
     sys->Add(Ground_Body);
     sys->Add(Body_1);
+    sys->Add(Body_2);
 
     Rev_joint_1 = new Joint(0, pi, pj, qi, qj, Ground_Body, Body_1);
     Rev_joint_2 = new Joint(0, pi_1, pj_1, qi_1, qj_1, Body_1, Body_2);

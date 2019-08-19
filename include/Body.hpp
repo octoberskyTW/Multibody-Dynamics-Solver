@@ -17,6 +17,9 @@ public:
     arma::vec get_ANG_VEL();
     arma::vec get_ANGLE();
     arma::vec get_ANGLE_ACC();
+    arma::vec get_FORCE();
+    arma::vec get_TORQUE();
+    arma::mat get_M();
 
 protected:
     arma::vec POSITION;
@@ -26,7 +29,6 @@ protected:
     arma::vec ANGLE_VEL;
     arma::vec ANGLE_ACC;
     arma::mat M;
-    arma::mat I;
     arma::vec FORCE;
     arma::vec TORQUE;
     arma::mat TBI;

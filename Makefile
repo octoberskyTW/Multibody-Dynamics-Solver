@@ -7,6 +7,10 @@ CXX = g++
 CXXFLAGS = -I include -Wall -g
 LDFLAGS = -larmadillo
 
+.PHONY: run obj clean distclean
+
+all: $(EXEC)
+
 OBJS = $(patsubst $(SRC)/%.cpp, %.o, $(wildcard $(SRC)/*.cpp))
 
 OBJS := $(addprefix $(OUT)/,$(OBJS))
@@ -21,9 +25,6 @@ $(OUT)/%.o: $(SRC)/%.cpp $(OUT)
 $(EXEC): $(OBJS)
 	$(CXX) -o $@ $(OBJS) $(LDFLAGS)
 
-.PHONY: run obj clean distclean
-
-all: $(EXEC)
 
 run: $(EXEC)
 	./$(EXEC)
@@ -36,5 +37,4 @@ clean:
 distclean: clean
 	$(RM) -rf build
 	$(RM) $(EXEC)
-
 -include $(deps)
