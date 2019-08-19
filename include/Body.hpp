@@ -14,12 +14,14 @@ public:
     arma::vec get_POSITION();
     arma::vec get_VELOCITY();
     arma::vec get_ACCELERATION();
-    arma::vec get_ANG_VEL();
+    arma::vec get_ANGLE_VEL();
     arma::vec get_ANGLE();
     arma::vec get_ANGLE_ACC();
     arma::vec get_FORCE();
     arma::vec get_TORQUE();
     arma::mat get_M();
+    virtual void update(arma::vec PosIn, arma::vec VelIn, arma::vec AttIn
+        , arma::vec ANG_VEL_In) = 0;
 
 protected:
     arma::vec POSITION;
@@ -39,6 +41,8 @@ class Ground : public Body
 public:
     Ground();
     ~Ground() {};
+    virtual void update(arma::vec PosIn, arma::vec VelIn, arma::vec AttIn
+        , arma::vec ANG_VEL_In) {};
 };
 
 class Mobilized_body : public Body
@@ -48,6 +52,9 @@ public:
         , arma::vec ANG_VEL_In, arma::vec ANG_ACC_In, double MIn, arma::vec IIn
         , arma::vec F_In, arma::vec T_In);
     ~Mobilized_body();
+
+    virtual void update(arma::vec PosIn, arma::vec VelIn, arma::vec AttIn
+        , arma::vec ANG_VEL_In) override;
 };
 
 #endif  //BODY_HPP

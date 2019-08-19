@@ -15,7 +15,7 @@ Body::Body() :
 
 arma::vec Body::get_POSITION() { return POSITION; }
 arma::mat Body::get_TBI() { return TBI; }
-arma::vec Body::get_ANG_VEL() { return ANGLE_VEL; }
+arma::vec Body::get_ANGLE_VEL() { return ANGLE_VEL; }
 arma::vec Body::get_ANGLE() { return ANGLE; }
 arma::vec Body::get_VELOCITY() { return VELOCITY; }
 arma::vec Body::get_ACCELERATION() { return ACCELERATION; }
@@ -48,6 +48,17 @@ Mobilized_body::Mobilized_body(arma::vec PosIn, arma::vec VelIn, arma::vec AccIn
         M(i, i) = MIn;
         M(i + 3, i + 3) = IIn(i);
     }
+
+    TBI = build_psi_tht_phi_TM(ANGLE(2), ANGLE(1), ANGLE(0));
+}
+
+void Mobilized_body::update(arma::vec PosIn, arma::vec VelIn, arma::vec AttIn
+        , arma::vec ANG_VEL_In) {
+
+    POSITION = PosIn;
+    VELOCITY = VelIn;
+    ANGLE = AttIn;
+    ANGLE_VEL = ANG_VEL_In;
 
     TBI = build_psi_tht_phi_TM(ANGLE(2), ANGLE(1), ANGLE(0));
 }

@@ -33,8 +33,8 @@ Joint::Joint(unsigned int TypeIn, arma::vec piIn, arma::vec pjIn, arma::vec qiIn
 void Joint::update() {
     TBI_i = body_i_ptr->get_TBI();
     TBI_j = body_j_ptr->get_TBI();
-    wi = body_i_ptr->get_ANG_VEL();
-    wj = body_j_ptr->get_ANG_VEL();
+    wi = body_i_ptr->get_ANGLE_VEL();
+    wj = body_j_ptr->get_ANGLE_VEL();
     Pi = trans(TBI_i) * pi;
     Pj = trans(TBI_j) * pj;
     Qi = trans(TBI_i) * qi;
