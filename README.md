@@ -1,2 +1,2 @@
 # Multibody-solver
-Using Lagrangian mechanical to calculate pendulum motion
+Using Lagrangian mechanical & Relativity Constraints to solve dynamics system
