@@ -43,22 +43,29 @@ Mobilized_body::Mobilized_body(arma::vec PosIn, arma::vec VelIn, arma::vec AccIn
     ANGLE_VEL = ANG_VEL_In;
     ANGLE_ACC = ANG_ACC_In;
     FORCE = F_In;
-    TORQUE = T_In;
+    APPILED_TORQUE = T_In;
     for (unsigned int i = 0; i < 3; i++) {
         M(i, i) = MIn;
         M(i + 3, i + 3) = IIn(i);
     }
 
     TBI = build_psi_tht_phi_TM(ANGLE(2), ANGLE(1), ANGLE(0));
+    POSITION = trans(TBI) * POSITION;
+    VELOCITY = trans(TBI) * VELOCITY;
+    ACCELERATION = trans(TBI) * ACCELERATION;
+    ANGLE_VEL = trans(TBI) * ANGLE_VEL;
+    ANGLE_ACC = trans(TBI) * ANGLE_ACC;
 }
 
 void Mobilized_body::update(arma::vec PosIn, arma::vec VelIn, arma::vec AttIn
         , arma::vec ANG_VEL_In) {
+
+    TBI = build_psi_tht_phi_TM(AttIn(2), AttIn(1), AttIn(0));
 
     POSITION = PosIn;
     VELOCITY = VelIn;
     ANGLE = AttIn;
     ANGLE_VEL = ANG_VEL_In;
 
-    TBI = build_psi_tht_phi_TM(ANGLE(2), ANGLE(1), ANGLE(0));
+    TORQUE = APPILED_TORQUE - skew_sym(ANGLE_VEL) * M.submat(3, 3, 5, 5) * ANGLE_VEL;
 }

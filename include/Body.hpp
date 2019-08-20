@@ -33,6 +33,7 @@ protected:
     arma::mat M;
     arma::vec FORCE;
     arma::vec TORQUE;
+    arma::vec APPILED_TORQUE;
     arma::mat TBI;
 };
 

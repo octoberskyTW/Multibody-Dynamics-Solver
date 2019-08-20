@@ -17,6 +17,7 @@ public:
 
     arma::mat get_Cq();
     arma::vec get_GAMMA();
+    arma::vec get_Pj();
 
 private:
     unsigned int Type;  

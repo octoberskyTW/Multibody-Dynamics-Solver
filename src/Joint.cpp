@@ -27,7 +27,7 @@ Joint::Joint(unsigned int TypeIn, arma::vec piIn, arma::vec pjIn, arma::vec qiIn
         qi = qiIn;
         qj = qjIn;
 
-        update();        
+        update();
 }
 
 void Joint::update() {
@@ -64,15 +64,15 @@ void Joint::Build_Cq() {
 }
 
 void Joint::Build_GAMMA() {
-    arma::mat33 Skew_Omega_i = skew_sym(trans(TBI_i) * wi);
-    arma::mat33 Skew_Omega_j = skew_sym(trans(TBI_j) * wj);
+    arma::mat33 Skew_Omega_i = skew_sym(wi);
+    arma::mat33 Skew_Omega_j = skew_sym(wj);
 
     GAMMA = -trans(TBI_i) * Skew_Omega_i * Skew_Omega_i * pi + trans(TBI_j) * Skew_Omega_j * Skew_Omega_j * pj;
 }
 
 arma::mat Joint::get_Cq() { return Cq; }
 arma::vec Joint::get_GAMMA() { return GAMMA; }
-
+arma::vec Joint::get_Pj() { return Pj; }
 
 
 

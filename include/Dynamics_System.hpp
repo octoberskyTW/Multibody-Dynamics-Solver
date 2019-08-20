@@ -8,7 +8,7 @@
 class Dynamics_Sys
 {
 public:
-    Dynamics_Sys();
+    Dynamics_Sys(double dt_In);
     ~Dynamics_Sys() {};
 
     void Add(Body *bodyPtr_In);
@@ -16,14 +16,16 @@ public:
     void Assembly();
     void init();
     void solve();
+    void output_data(std::ofstream &fout_In);
 
     unsigned int get_nbody();
-    unsigned int get_njoint();    
+    unsigned int get_njoint();
+
     
 private:
     void dynamic_function(std::vector<arma::vec> qIn, std::vector<arma::vec> &qdOut);
 
-
+    double dt;
     unsigned int nbody;
     unsigned int njoint;
     arma::mat SYS_Cq;
