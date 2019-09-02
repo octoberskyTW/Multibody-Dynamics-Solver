@@ -20,6 +20,13 @@ public:
     arma::vec get_FORCE();
     arma::vec get_TORQUE();
     arma::mat get_M();
+    arma::vec get_TBI_Q();
+    arma::vec get_TBID_Q();
+
+    void set_POSITION(const arma::vec PosIn);
+    void set_VELOCITY(const arma::vec VelIn);
+    void set_ACCELERATION(const arma::vec AccIn);
+
     virtual void update(arma::vec PosIn, arma::vec VelIn, arma::vec AttIn
         , arma::vec ANG_VEL_In) = 0;
 
@@ -35,12 +42,14 @@ protected:
     arma::vec TORQUE;
     arma::vec APPILED_TORQUE;
     arma::mat TBI;
+    arma::vec TBI_Q;
+    arma::vec TBID_Q;
 };
 
 class Ground : public Body
 {
 public:
-    Ground();
+    Ground(arma::vec PosIn);
     ~Ground() {};
     virtual void update(arma::vec PosIn, arma::vec VelIn, arma::vec AttIn
         , arma::vec ANG_VEL_In) {};
@@ -54,7 +63,7 @@ public:
         , arma::vec F_In, arma::vec T_In);
     ~Mobilized_body();
 
-    virtual void update(arma::vec PosIn, arma::vec VelIn, arma::vec AttIn
+    virtual void update(arma::vec PosIn, arma::vec VelIn, arma::vec TBI_QIn
         , arma::vec ANG_VEL_In) override;
 };
 

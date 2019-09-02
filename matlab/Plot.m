@@ -1,5 +1,5 @@
-clear all;
-data = importdata('../data.txt');
+% clear all;
+% data = importdata('../data.txt');
 n_cols = size(data);
 n_body = (n_cols(2)-1) / 3;
 h = figure;
@@ -14,7 +14,7 @@ end
 hh2 = plot3([0, X], [0, Y], [0, -Z], '.-', 'MarkerSize', 20, 'LineWidth', 2);
 axis equal
 axis([-2*n_body 2*n_body -2*n_body 2*n_body -2*n_body 2*n_body]);
-view(0, 0);
+view(45, 45);
 grid on;
 n_elements = n_cols(1);
 

@@ -10,7 +10,9 @@ Body::Body() :
     M(6, 6, arma::fill::eye),
     FORCE(3, arma::fill::zeros),
     TORQUE(3, arma::fill::zeros),
-    TBI(3, 3, arma::fill::zeros) {
+    TBI(3, 3, arma::fill::zeros),
+    TBI_Q(4, arma::fill::zeros),
+    TBID_Q(4, arma::fill::zeros) {
 }
 
 arma::vec Body::get_POSITION() { return POSITION; }
@@ -23,14 +25,21 @@ arma::vec Body::get_ANGLE_ACC() { return ANGLE_ACC; }
 arma::vec Body::get_FORCE() { return FORCE; }
 arma::vec Body::get_TORQUE() { return TORQUE; }
 arma::mat Body::get_M() { return M; }
+arma::vec Body::get_TBI_Q() { return TBI_Q;}
+arma::vec Body::get_TBID_Q() { return TBID_Q;}
 
-Ground::Ground() {
+void Body::set_POSITION(const arma::vec PosIn) { POSITION = PosIn; }
+void Body::set_VELOCITY(const arma::vec VelIn) { VELOCITY = VelIn; }
+void Body::set_ACCELERATION(const arma::vec AccIn) { ACCELERATION = AccIn; }
+
+Ground::Ground(arma::vec PosIn) {
     for (unsigned int i = 0; i < 3; i++) {
         M(i, i) = 1.0;
         M(i + 3, i + 3) = 1.0;
     }
 
     TBI = build_psi_tht_phi_TM(ANGLE(2), ANGLE(1), ANGLE(0));
+    POSITION = PosIn;
 }
 
 Mobilized_body::Mobilized_body(arma::vec PosIn, arma::vec VelIn, arma::vec AccIn, arma::vec AttIn
@@ -50,6 +59,7 @@ Mobilized_body::Mobilized_body(arma::vec PosIn, arma::vec VelIn, arma::vec AccIn
     }
 
     TBI = build_psi_tht_phi_TM(ANGLE(2), ANGLE(1), ANGLE(0));
+    TBI_Q = Matrix2Quaternion(TBI);
     POSITION = trans(TBI) * POSITION;
     VELOCITY = trans(TBI) * VELOCITY;
     ACCELERATION = trans(TBI) * ACCELERATION;
@@ -57,15 +67,34 @@ Mobilized_body::Mobilized_body(arma::vec PosIn, arma::vec VelIn, arma::vec AccIn
     ANGLE_ACC = trans(TBI) * ANGLE_ACC;
 }
 
-void Mobilized_body::update(arma::vec PosIn, arma::vec VelIn, arma::vec AttIn
+void Mobilized_body::update(arma::vec PosIn, arma::vec VelIn, arma::vec TBI_QIn
         , arma::vec ANG_VEL_In) {
 
-    TBI = build_psi_tht_phi_TM(AttIn(2), AttIn(1), AttIn(0));
+    TBI = Quaternion2Matrix(TBI_QIn);
 
     POSITION = PosIn;
     VELOCITY = VelIn;
-    ANGLE = AttIn;
+    ANGLE = euler_angle(TBI);
     ANGLE_VEL = ANG_VEL_In;
+
+    /* Prepare for orthonormalization */
+    double quat_metric = TBI_QIn(0) * TBI_QIn(0) + TBI_QIn(1) * TBI_QIn(1) +
+                         TBI_QIn(2) * TBI_QIn(2) + TBI_QIn(3) * TBI_QIn(3);
+    double erq = 1. - quat_metric;
+
+    /* Calculate Previous states */  //  Zipfel p.141
+    TBID_Q(0) = 0.5 * (-ANG_VEL_In(0) * TBI_QIn(1) - ANG_VEL_In(1) * TBI_QIn(2) -
+                           ANG_VEL_In(2) * TBI_QIn(3)) +
+                    50. * erq * TBI_QIn(0);
+    TBID_Q(1) = 0.5 * (ANG_VEL_In(0) * TBI_QIn(0) + ANG_VEL_In(2) * TBI_QIn(2) -
+                           ANG_VEL_In(1) * TBI_QIn(3)) +
+                    50. * erq * TBI_QIn(1);
+    TBID_Q(2) = 0.5 * (ANG_VEL_In(1) * TBI_QIn(0) - ANG_VEL_In(2) * TBI_QIn(1) +
+                           ANG_VEL_In(0) * TBI_QIn(3)) +
+                    50. * erq * TBI_QIn(2);
+    TBID_Q(3) = 0.5 * (ANG_VEL_In(2) * TBI_QIn(0) + ANG_VEL_In(1) * TBI_QIn(1) -
+                           ANG_VEL_In(0) * TBI_QIn(2)) +
+                    50. * erq * TBI_QIn(3);
 
     TORQUE = APPILED_TORQUE - skew_sym(ANGLE_VEL) * M.submat(3, 3, 5, 5) * ANGLE_VEL;
 }

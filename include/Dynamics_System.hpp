@@ -13,6 +13,7 @@ public:
 
     void Add(Body *bodyPtr_In);
     void Add(Joint *jointPtr_In);
+    void Cal_Constraints();
     void Assembly();
     void init();
     void solve();

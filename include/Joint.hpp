@@ -17,7 +17,11 @@ public:
 
     arma::mat get_Cq();
     arma::vec get_GAMMA();
+    arma::vec get_Pi();
     arma::vec get_Pj();
+    arma::vec get_CONSTRAINT();
+    Body* get_body_i_ptr();
+    Body* get_body_j_ptr();
 
 private:
     unsigned int Type;  
