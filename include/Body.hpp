@@ -26,6 +26,9 @@ public:
     void set_POSITION(const arma::vec PosIn);
     void set_VELOCITY(const arma::vec VelIn);
     void set_ACCELERATION(const arma::vec AccIn);
+    void set_ANGLE(const arma::vec AngIn);
+    void set_ANGLE_VEL(const arma::vec AngvelIn);
+    void set_ANGLE_ACC(const arma::vec AngaccIn);
 
     virtual void update(arma::vec PosIn, arma::vec VelIn, arma::vec AttIn
         , arma::vec ANG_VEL_In) = 0;

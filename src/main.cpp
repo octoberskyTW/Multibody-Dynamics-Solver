@@ -27,14 +27,17 @@ int main(int argc, char const *argv[])
     arma::vec qj = {0., 0., 0.};
     arma::vec POS = {0., 0., 0.};
     arma::vec VEL = {0., 0., 0.};
+    arma::vec VEL1 = {0., 0., 0.};
     arma::vec ACC = {0., 0., 0.};
-    arma::vec ANG = {-0. * 3.1415926 / 180.0, -0. * 3.1415926 / 180.0, -0. * 3.1415926 / 180.0};
+    arma::vec ANG = {-0. * 3.1415926 / 180.0, -90. * 3.1415926 / 180.0, -0. * 3.1415926 / 180.0};
     arma::vec ANG1 = {-0. * 3.1415926 / 180.0, -90. * 3.1415926 / 180.0, -0. * 3.1415926 / 180.0};
     arma::vec ANG_VEL = {0., 0., 0.};
+    arma::vec ANG_VEL1 = {0., 0., 0.};
     arma::vec ANG_ACC = {0., 0., 0.};
     arma::vec I = {1., 1., 1.};
-    arma::vec F = {0., 0., mass * 9.81};
-    arma::vec T = {0., 0., 0.};
+    arma::vec F = {0., 0., -mass * 9.81};
+    arma::vec T = {0., 5., 0.};
+    arma::vec T1 = {0., 5., 0.};
     arma::vec pi_1 = {0., 0., 0.};
     arma::vec pj_1 = {-1., 0., 0.};
     arma::vec qi_1 = {0., 0., 0.};
@@ -48,8 +51,8 @@ int main(int argc, char const *argv[])
     sys->Add(Rev_joint_1);
     
     Body_prev = Body_1;
-    for (unsigned int i = 0; i < 30; i++) {
-        Body_now = new Mobilized_body(POS, VEL, ACC, ANG1, ANG_VEL, ANG_ACC, mass, I, F, T);
+    for (unsigned int i = 0; i < 10; i++) {
+        Body_now = new Mobilized_body(POS, VEL1, ACC, ANG1, ANG_VEL1, ANG_ACC, mass, I, F, T1);
         Rev_joint = new Joint(0, pi_1, pj_1, qi_1, qj_1, Body_prev, Body_now);
 
         sys->Add(Body_now);
@@ -59,7 +62,7 @@ int main(int argc, char const *argv[])
     sys->Assembly();
     sys->init();
 
-    for (unsigned int i = 0; i < 50000; i++) {
+    for (unsigned int i = 0; i < 10000; i++) {
         sys->solve();
         
         time += 0.001;

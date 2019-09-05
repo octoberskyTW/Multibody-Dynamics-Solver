@@ -31,6 +31,9 @@ arma::vec Body::get_TBID_Q() { return TBID_Q;}
 void Body::set_POSITION(const arma::vec PosIn) { POSITION = PosIn; }
 void Body::set_VELOCITY(const arma::vec VelIn) { VELOCITY = VelIn; }
 void Body::set_ACCELERATION(const arma::vec AccIn) { ACCELERATION = AccIn; }
+void Body::set_ANGLE(const arma::vec AngIn) { ANGLE = AngIn; }
+void Body::set_ANGLE_VEL(const arma::vec AngvelIn) { ANGLE_VEL = AngvelIn; }
+void Body::set_ANGLE_ACC(const arma::vec AngaccIn) { ANGLE_ACC = AngaccIn; }
 
 Ground::Ground(arma::vec PosIn) {
     for (unsigned int i = 0; i < 3; i++) {

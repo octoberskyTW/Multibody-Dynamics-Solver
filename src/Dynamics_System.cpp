@@ -68,6 +68,10 @@ void Dynamics_Sys::Assembly() { //Need to be done, Initialization sequence!!!
 
         j_ptr->set_POSITION(i_ptr->get_POSITION() + Joint_ptr_array[i]->get_Pi()
             - Joint_ptr_array[i]->get_Pj());
+        j_ptr->set_ANGLE_VEL(i_ptr->get_ANGLE_VEL() + j_ptr->get_ANGLE_VEL());
+        j_ptr->set_ANGLE_ACC(i_ptr->get_ANGLE_ACC() + j_ptr->get_ANGLE_ACC());
+        j_ptr->set_VELOCITY(j_ptr->get_VELOCITY() + i_ptr->get_VELOCITY() - skew_sym(j_ptr->get_ANGLE_VEL())
+                    * Joint_ptr_array[i]->get_Pj());
     }
 }
 
@@ -161,7 +165,7 @@ void Dynamics_Sys::dynamic_function(std::vector<arma::vec> qIn, std::vector<arma
 }
 void Dynamics_Sys::output_data(std::ofstream &fout_In) {
     // arma::vec3 v_temp;
-    for (unsigned int i = 1; i < nbody; i++) {
+    for (unsigned int i = 0; i < nbody; i++) {
         // v_temp = Joint_ptr_array[i - 1]->get_Pj();
         fout_In << q[i * 4](0) << '\t' << q[i * 4](1) << '\t' << q[i * 4](2) << '\t';
     }
