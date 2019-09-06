@@ -22,6 +22,7 @@ public:
     arma::mat get_M();
     arma::vec get_TBI_Q();
     arma::vec get_TBID_Q();
+    unsigned int get_num();
 
     void set_POSITION(const arma::vec PosIn);
     void set_VELOCITY(const arma::vec VelIn);
@@ -34,6 +35,10 @@ public:
         , arma::vec ANG_VEL_In) = 0;
 
 protected:
+
+    unsigned int type;  // type define   0: Ground body, 1: Mobilized body
+    unsigned int num;  // No. body
+
     arma::vec POSITION;
     arma::vec VELOCITY;
     arma::vec ACCELERATION;
@@ -52,7 +57,7 @@ protected:
 class Ground : public Body
 {
 public:
-    Ground(arma::vec PosIn);
+    Ground(unsigned int NumIn);
     ~Ground() {};
     virtual void update(arma::vec PosIn, arma::vec VelIn, arma::vec AttIn
         , arma::vec ANG_VEL_In) {};
@@ -61,7 +66,7 @@ public:
 class Mobilized_body : public Body
 {
 public:
-    Mobilized_body(arma::vec PosIn, arma::vec VelIn, arma::vec AccIn, arma::vec AttIn
+    Mobilized_body(unsigned int NumIn, arma::vec PosIn, arma::vec VelIn, arma::vec AccIn, arma::vec AttIn
         , arma::vec ANG_VEL_In, arma::vec ANG_ACC_In, double MIn, arma::vec IIn
         , arma::vec F_In, arma::vec T_In);
     ~Mobilized_body();

@@ -12,9 +12,9 @@ for i = 1:((n_cols(2)-1) / 3)
     Z = [Z, data(1, (i - 1) * 3 + 4)];
 end
 hh2 = plot3(X, Y, -Z, '.-', 'MarkerSize', 20, 'LineWidth', 2);
-% axis equal
+axis equal;
 axis([-2*n_body 2*n_body -2*n_body 2*n_body -2*n_body 2*n_body]);
-view(45, 45);
+view(0, 0);
 grid on;
 n_elements = n_cols(1);
 pause(5);

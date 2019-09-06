@@ -17,16 +17,34 @@ void Dynamics_Sys::Add(Joint *jointPtr_In) {
 }
 
 void Dynamics_Sys::Cal_Constraints() {
-    
+    unsigned int i_num, j_num;
+    arma::mat tmp_Cq(3, nbody * 6, arma::fill::zeros);
+    arma::mat tmp_Cqi, tmp_Cqj;
+
     SYS_Cq.eye(6, 6);
     SYS_GAMMA = arma::zeros<arma::vec>(6, 1);
     SYS_M.eye(6, 6);
     SYS_C.zeros(0, 0);
+
     SYS_C = arma::join_cols(Body_ptr_array[0]->get_POSITION(), Body_ptr_array[0]->get_ANGLE());
+    SYS_Cq = arma::join_rows(SYS_Cq, arma::zeros<arma::mat>(6, 6 * (nbody - 1)));
 
     for (unsigned int i = 0; i < njoint; i++) {
-        SYS_Cq = arma::join_cols(arma::join_rows(SYS_Cq, arma::zeros<arma::mat>(6 + i * 3, 6)),
-            arma::join_rows(arma::zeros<arma::mat>(3, 6 * i), Joint_ptr_array[i]->get_Cq()));
+        tmp_Cq.zeros(); // Reset tmp_Cq to zeros
+        i_num = Joint_ptr_array[i]->get_body_i_ptr()->get_num();
+        j_num = Joint_ptr_array[i]->get_body_j_ptr()->get_num();
+        tmp_Cqi = Joint_ptr_array[i]->get_Cqi();
+        tmp_Cqj = Joint_ptr_array[i]->get_Cqj();
+        for (unsigned int ii = 0; ii < tmp_Cq.n_rows; ++ii) {
+            for (unsigned int jj = 0; jj < tmp_Cqi.n_cols; ++jj) {
+                tmp_Cq(ii, i_num * 6 + jj) = tmp_Cqi(ii, jj);
+                tmp_Cq(ii, j_num * 6 + jj) = tmp_Cqj(ii, jj);
+            }
+        }
+
+        SYS_Cq = arma::join_cols(SYS_Cq, tmp_Cq);
+        // SYS_Cq = arma::join_cols(arma::join_rows(SYS_Cq, arma::zeros<arma::mat>(6 + i * 3, 6)),
+        //     arma::join_rows(arma::zeros<arma::mat>(3, 6 * i), Joint_ptr_array[i]->get_Cq()));
 
         SYS_GAMMA = arma::join_cols(SYS_GAMMA, Joint_ptr_array[i]->get_GAMMA());
 
@@ -68,8 +86,8 @@ void Dynamics_Sys::Assembly() { //Need to be done, Initialization sequence!!!
 
         j_ptr->set_POSITION(i_ptr->get_POSITION() + Joint_ptr_array[i]->get_Pi()
             - Joint_ptr_array[i]->get_Pj());
-        j_ptr->set_ANGLE_VEL(i_ptr->get_ANGLE_VEL() + j_ptr->get_ANGLE_VEL());
-        j_ptr->set_ANGLE_ACC(i_ptr->get_ANGLE_ACC() + j_ptr->get_ANGLE_ACC());
+        // j_ptr->set_ANGLE_VEL(i_ptr->get_ANGLE_VEL() + j_ptr->get_ANGLE_VEL());
+        // j_ptr->set_ANGLE_ACC(i_ptr->get_ANGLE_ACC() + j_ptr->get_ANGLE_ACC());
         j_ptr->set_VELOCITY(j_ptr->get_VELOCITY() + i_ptr->get_VELOCITY() - skew_sym(j_ptr->get_ANGLE_VEL())
                     * Joint_ptr_array[i]->get_Pj());
     }
@@ -165,7 +183,7 @@ void Dynamics_Sys::dynamic_function(std::vector<arma::vec> qIn, std::vector<arma
 }
 void Dynamics_Sys::output_data(std::ofstream &fout_In) {
     // arma::vec3 v_temp;
-    for (unsigned int i = 0; i < nbody; i++) {
+    for (unsigned int i = 1; i < nbody; i++) {
         // v_temp = Joint_ptr_array[i - 1]->get_Pj();
         fout_In << q[i * 4](0) << '\t' << q[i * 4](1) << '\t' << q[i * 4](2) << '\t';
     }

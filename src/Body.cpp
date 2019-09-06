@@ -27,6 +27,7 @@ arma::vec Body::get_TORQUE() { return TORQUE; }
 arma::mat Body::get_M() { return M; }
 arma::vec Body::get_TBI_Q() { return TBI_Q;}
 arma::vec Body::get_TBID_Q() { return TBID_Q;}
+unsigned int Body::get_num() { return num; }
 
 void Body::set_POSITION(const arma::vec PosIn) { POSITION = PosIn; }
 void Body::set_VELOCITY(const arma::vec VelIn) { VELOCITY = VelIn; }
@@ -35,19 +36,25 @@ void Body::set_ANGLE(const arma::vec AngIn) { ANGLE = AngIn; }
 void Body::set_ANGLE_VEL(const arma::vec AngvelIn) { ANGLE_VEL = AngvelIn; }
 void Body::set_ANGLE_ACC(const arma::vec AngaccIn) { ANGLE_ACC = AngaccIn; }
 
-Ground::Ground(arma::vec PosIn) {
+Ground::Ground(unsigned int NumIn) {
     for (unsigned int i = 0; i < 3; i++) {
         M(i, i) = 1.0;
         M(i + 3, i + 3) = 1.0;
     }
 
+    type = 0;
+    num = NumIn;
+
     TBI = build_psi_tht_phi_TM(ANGLE(2), ANGLE(1), ANGLE(0));
-    POSITION = PosIn;
 }
 
-Mobilized_body::Mobilized_body(arma::vec PosIn, arma::vec VelIn, arma::vec AccIn, arma::vec AttIn
+Mobilized_body::Mobilized_body(unsigned int NumIn, arma::vec PosIn, arma::vec VelIn, arma::vec AccIn, arma::vec AttIn
         , arma::vec ANG_VEL_In, arma::vec ANG_ACC_In, double MIn, arma::vec IIn
         , arma::vec F_In, arma::vec T_In) {
+    
+    type = 1;
+    num = NumIn;
+
     POSITION = PosIn;
     VELOCITY = VelIn;
     ACCELERATION = AccIn;

@@ -15,7 +15,8 @@ public:
     void Build_GAMMA();
     void update();
 
-    arma::mat get_Cq();
+    arma::mat get_Cqi();
+    arma::mat get_Cqj();
     arma::vec get_GAMMA();
     arma::vec get_Pi();
     arma::vec get_Pj();
@@ -29,7 +30,8 @@ private:
     arma::vec pj;
     arma::vec qi;
     arma::vec qj;
-    arma::mat Cq;
+    arma::mat Cqi;
+    arma::mat Cqj;
     arma::vec GAMMA;
     arma::vec CONSTRAINT;
     arma::mat TBI_i;

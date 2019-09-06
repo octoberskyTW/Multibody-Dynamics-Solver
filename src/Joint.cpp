@@ -6,7 +6,8 @@ Joint::Joint(unsigned int TypeIn, arma::vec piIn, arma::vec pjIn, arma::vec qiIn
     pj(3, arma::fill::zeros),
     qi(3, arma::fill::zeros),
     qj(3, arma::fill::zeros),
-    Cq(3, 12, arma::fill::zeros),
+    Cqi(3, 6, arma::fill::zeros),
+    Cqj(3, 6, arma::fill::zeros),
     GAMMA(3, arma::fill::zeros),
     CONSTRAINT(3, arma::fill::zeros),
     TBI_i(3, 3, arma::fill::eye),
@@ -60,7 +61,8 @@ void Joint::Build_Cq() {
     temp_matrix_2 = -skew_sym(Pi) * trans(TBI_i);
     temp_matrix_4 = skew_sym(Pj) * trans(TBI_j);
 
-    Cq = join_rows(temp_matrix_1, join_rows(temp_matrix_2, join_rows(-temp_matrix_3, temp_matrix_4)));
+    Cqi = join_rows(temp_matrix_1, temp_matrix_2);
+    Cqj = join_rows(-temp_matrix_3, temp_matrix_4);
 }
 
 void Joint::Build_GAMMA() {
@@ -70,7 +72,8 @@ void Joint::Build_GAMMA() {
     GAMMA = -trans(TBI_i) * Skew_Omega_i * Skew_Omega_i * pi + trans(TBI_j) * Skew_Omega_j * Skew_Omega_j * pj;
 }
 
-arma::mat Joint::get_Cq() { return Cq; }
+arma::mat Joint::get_Cqi() { return Cqi; }
+arma::mat Joint::get_Cqj() { return Cqj; }
 arma::vec Joint::get_CONSTRAINT() { return CONSTRAINT; }
 arma::vec Joint::get_GAMMA() { return GAMMA; }
 arma::vec Joint::get_Pi() { return Pi; }
