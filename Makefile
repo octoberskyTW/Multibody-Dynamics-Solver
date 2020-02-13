@@ -4,7 +4,7 @@ EXEC = main
 INCLUDE = include
 CXX = g++
 
-CXXFLAGS = -I include -Wall -g
+CXXFLAGS = -I include -Wall -g -std=c++14
 LDFLAGS = -larmadillo
 
 .PHONY: run obj clean distclean

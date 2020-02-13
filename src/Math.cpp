@@ -3,7 +3,7 @@
 #define PI 3.1415926536  ///< circumference of unit diameter circle
 #define EPS 1.e-10      ///< machine precision error (type double)
 
-arma::mat33 build_psi_tht_phi_TM(const double &psi, const double &tht, const double &phi) {
+void build_psi_tht_phi_TM(const double &psi, const double &tht, const double &phi, arma::mat &AMAT) {
     double spsi = sin(psi);
     double cpsi = cos(psi);
     double stht = sin(tht);
@@ -11,7 +11,6 @@ arma::mat33 build_psi_tht_phi_TM(const double &psi, const double &tht, const dou
     double sphi = sin(phi);
     double cphi = cos(phi);
 
-    arma::mat33 AMAT;
     AMAT(0, 0) = cpsi * ctht;
     AMAT(1, 0) = cpsi * stht * sphi - spsi * cphi;
     AMAT(2, 0) = cpsi * stht * cphi + spsi * sphi;
@@ -22,7 +21,7 @@ arma::mat33 build_psi_tht_phi_TM(const double &psi, const double &tht, const dou
     AMAT(1, 2) = ctht * sphi;
     AMAT(2, 2) = ctht * cphi;
 
-    return AMAT;
+    return;
 }
 
 arma::mat33 skew_sym(arma::vec3 vec) {

@@ -45,7 +45,7 @@ Ground::Ground(unsigned int NumIn) {
     type = 0;
     num = NumIn;
 
-    TBI = build_psi_tht_phi_TM(ANGLE(2), ANGLE(1), ANGLE(0));
+    build_psi_tht_phi_TM(ANGLE(2), ANGLE(1), ANGLE(0), TBI);
 }
 
 Mobilized_body::Mobilized_body(unsigned int NumIn, arma::vec PosIn, arma::vec VelIn, arma::vec AccIn, arma::vec AttIn
@@ -68,7 +68,7 @@ Mobilized_body::Mobilized_body(unsigned int NumIn, arma::vec PosIn, arma::vec Ve
         M(i + 3, i + 3) = IIn(i);
     }
 
-    TBI = build_psi_tht_phi_TM(ANGLE(2), ANGLE(1), ANGLE(0));
+    build_psi_tht_phi_TM(ANGLE(2), ANGLE(1), ANGLE(0), TBI);
     TBI_Q = Matrix2Quaternion(TBI);
     POSITION = trans(TBI) * POSITION;
     VELOCITY = trans(TBI) * VELOCITY;
