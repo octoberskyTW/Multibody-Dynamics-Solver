@@ -65,8 +65,7 @@ int main(int argc, char const *argv[])
         time += 0.001;
 
         fout << time << '\t';
-
-        sys->output_data(fout);
+        if (i % 100 == 0) sys->output_data(fout);
     } 
 
 
