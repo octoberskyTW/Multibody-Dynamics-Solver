@@ -1,3 +1,7 @@
 *.tags
 *.dat
 *.vscode
+build/
+main
+*.dat
+*.csv
