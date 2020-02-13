@@ -69,7 +69,7 @@ Mobilized_body::Mobilized_body(unsigned int NumIn, arma::vec PosIn, arma::vec Ve
     }
 
     build_psi_tht_phi_TM(ANGLE(2), ANGLE(1), ANGLE(0), TBI);
-    TBI_Q = Matrix2Quaternion(TBI);
+     Matrix2Quaternion(TBI, TBI_Q);
     POSITION = trans(TBI) * POSITION;
     VELOCITY = trans(TBI) * VELOCITY;
     ACCELERATION = trans(TBI) * ACCELERATION;
@@ -80,7 +80,7 @@ Mobilized_body::Mobilized_body(unsigned int NumIn, arma::vec PosIn, arma::vec Ve
 void Mobilized_body::update(arma::vec PosIn, arma::vec VelIn, arma::vec TBI_QIn
         , arma::vec ANG_VEL_In) {
 
-    TBI = Quaternion2Matrix(TBI_QIn);
+    Quaternion2Matrix(TBI_QIn, TBI);
 
     POSITION = PosIn;
     VELOCITY = VelIn;

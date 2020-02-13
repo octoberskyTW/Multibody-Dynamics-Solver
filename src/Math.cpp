@@ -1,4 +1,5 @@
 #include "Math.hpp"
+#include <algorithm>
 
 #define PI 3.1415926536  ///< circumference of unit diameter circle
 #define EPS 1.e-10      ///< machine precision error (type double)
@@ -24,7 +25,7 @@ void build_psi_tht_phi_TM(const double &psi, const double &tht, const double &ph
     return;
 }
 
-arma::mat33 skew_sym(arma::vec3 vec) {
+arma::mat skew_sym(arma::vec3 const &vec) {
     arma::mat33 RESULT;
 
     RESULT(0, 0) = 0.0;
@@ -36,16 +37,13 @@ arma::mat33 skew_sym(arma::vec3 vec) {
     RESULT(0, 2) = vec(1);
     RESULT(1, 2) = -vec(0);
     RESULT(2, 2) = 0.0;
-
     return RESULT;
 }
 
-arma::vec4 Matrix2Quaternion(arma::mat33 Matrix_in)
-{
+void Matrix2Quaternion(arma::mat33 Matrix_in, arma::vec &Quaternion) {
     arma::vec4 q_square;
     double q_square_max;
     int j;
-    arma::vec4 Quaternion;
     Matrix_in = trans(Matrix_in);
     q_square[0] = fabs(1.0 + Matrix_in(0, 0) + Matrix_in(1, 1) + Matrix_in(2, 2));
     q_square[1] = fabs(1.0 + Matrix_in(0, 0) - Matrix_in(1, 1) - Matrix_in(2, 2));
@@ -82,13 +80,10 @@ arma::vec4 Matrix2Quaternion(arma::mat33 Matrix_in)
         break;
     }
 
-    return Quaternion;
+    return ;
 }
 
-arma::mat33 Quaternion2Matrix(arma::vec4 Quaternion_in)
-{
-    arma::mat33 Matrix_out;
-
+void Quaternion2Matrix(arma::vec4 const &Quaternion_in, arma::mat &Matrix_out) {
     Matrix_out(0, 0) = 2. * (Quaternion_in(0) * Quaternion_in(0) + Quaternion_in(1) * Quaternion_in(1)) - 1.;
     Matrix_out(0, 1) = 2. * (Quaternion_in(1) * Quaternion_in(2) + Quaternion_in(0) * Quaternion_in(3));
     Matrix_out(0, 2) = 2. * (Quaternion_in(1) * Quaternion_in(3) - Quaternion_in(0) * Quaternion_in(2));
@@ -98,8 +93,6 @@ arma::mat33 Quaternion2Matrix(arma::vec4 Quaternion_in)
     Matrix_out(2, 0) = 2. * (Quaternion_in(1) * Quaternion_in(3) + Quaternion_in(0) * Quaternion_in(2));
     Matrix_out(2, 1) = 2. * (Quaternion_in(2) * Quaternion_in(3) - Quaternion_in(0) * Quaternion_in(1));
     Matrix_out(2, 2) = 2. * (Quaternion_in(0) * Quaternion_in(0) + Quaternion_in(3) * Quaternion_in(3)) - 1.;
-
-    return Matrix_out;
 }
 
 arma::vec3 euler_angle(arma::mat33 TBD_in)
