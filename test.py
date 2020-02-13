@@ -15,8 +15,9 @@ class plot_window(QtWidgets.QDialog):
         self.window = QtWidgets.QWidget(self)
         self.resize(653, 500)
 
-        self.figure = plt.figure()
+        self.figure = plt.figure(figsize=(2, 2))
         self.canvas = FigureCanvas(self.figure)
+        self.ax = plt.axes(projection='3d')
 
         self.import_button = QtWidgets.QPushButton('import')
         self.plot_button = QtWidgets.QPushButton('plot')
@@ -24,11 +25,11 @@ class plot_window(QtWidgets.QDialog):
         self.import_button.clicked.connect(self.import_csv)
         self.plot_button.clicked.connect(self.plot)
 
-        self.main_layout = QtWidgets.QGridLayout()
+        self.main_layout = QtWidgets.QVBoxLayout()
         
-        self.main_layout.addWidget(self.canvas, 0, 0, 0, 2)
-        self.main_layout.addWidget(self.import_button,1, 0)
-        self.main_layout.addWidget(self.plot_button,1, 1)
+        self.main_layout.addWidget(self.canvas)
+        self.main_layout.addWidget(self.import_button)
+        self.main_layout.addWidget(self.plot_button)
         self.window.setLayout(self.main_layout)
 
     def import_csv(self):
@@ -36,14 +37,19 @@ class plot_window(QtWidgets.QDialog):
         self.csv = pd.read_csv(self.fileName_choose, sep='\s+')
         self.nbody = int(((len(self.csv.columns) - 1) / 3))
         self.timeticks = int(len(self.csv))
-
     def plot(self):
-        ax = plt.axes(projection='3d')
         for i in range(1, self.timeticks):
-            for j in range(2, self.nbody):
-                ax.plot([self.csv.iloc[i, int((j-1)*3 + 2)], self.csv.iloc[i, int((j)*3 + 2)]], [self.csv.iloc[i, int((j-1)*3 + 3)], self.csv.iloc[i, int((j)*3 + 3)]], [self.csv.iloc[i, int((j-1)*3 + 4)], self.csv.iloc[i, int((j)*3 + 4)]])
-                self.canvas.draw()
-                self.canvas.flush_events()
+            x = [0]
+            y = [0]
+            z = [0]
+            for j in range(0, self.nbody):
+                x.append(self.csv.iloc[i, int(j*3 + 1)])
+                y.append(self.csv.iloc[i, int(j*3 + 2)])
+                z.append(-self.csv.iloc[i, int(j*3 + 3)])
+            self.ax.plot(x, y, z)
+            self.canvas.draw()
+            self.canvas.flush_events()
+
 if __name__ == '__main__':
     app = QtWidgets.QApplication(sys.argv)
     main_window = plot_window()

@@ -1,7 +1,7 @@
 #include "Joint.hpp"
 
 Joint::Joint(unsigned int TypeIn, arma::vec piIn, arma::vec pjIn, arma::vec qiIn,
-            arma::vec qjIn, Body *i_In, Body *j_In) :
+            arma::vec qjIn, BodyPtr i_In, BodyPtr j_In) :
     pi(3, arma::fill::zeros),
     pj(3, arma::fill::zeros),
     qi(3, arma::fill::zeros),
@@ -78,8 +78,8 @@ arma::vec Joint::get_CONSTRAINT() { return CONSTRAINT; }
 arma::vec Joint::get_GAMMA() { return GAMMA; }
 arma::vec Joint::get_Pi() { return Pi; }
 arma::vec Joint::get_Pj() { return Pj; }
-Body* Joint::get_body_i_ptr() { return body_i_ptr; };
-Body* Joint::get_body_j_ptr() { return body_j_ptr; };
+BodyPtr Joint::get_body_i_ptr() { return body_i_ptr; };
+BodyPtr Joint::get_body_j_ptr() { return body_j_ptr; };
 
 
 

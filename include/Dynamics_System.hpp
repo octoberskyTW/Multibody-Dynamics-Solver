@@ -11,8 +11,8 @@ public:
     Dynamics_Sys(double dt_In);
     ~Dynamics_Sys() {};
 
-    void Add(Body *bodyPtr_In);
-    void Add(Joint *jointPtr_In);
+    void Add(BodyPtr bodyPtr_In);
+    void Add(JointPtr jointPtr_In);
     void Cal_Constraints();
     void Assembly();
     void init();
@@ -39,8 +39,8 @@ private:
     std::vector<arma::vec> q;
     arma::mat SYS_M;
 
-    std::vector<Body *> Body_ptr_array;
-    std::vector<Joint *> Joint_ptr_array; 
+    std::vector<BodyPtr> Body_ptr_array;
+    std::vector<JointPtr> Joint_ptr_array; 
 };
 
 #endif  //DYNAMICS_HPP

@@ -3,12 +3,14 @@
 
 #include <armadillo>
 #include "Math.hpp"
+#include <boost/shared_ptr.hpp>
+#include <boost/enable_shared_from_this.hpp>
 
-class Body
+class Body : public boost::enable_shared_from_this<Body>
 {
 public:
     Body();
-    ~Body() {};
+    virtual ~Body() = default;
 
     arma::mat get_TBI();
     arma::vec get_POSITION();
@@ -69,10 +71,11 @@ public:
     Mobilized_body(unsigned int NumIn, arma::vec PosIn, arma::vec VelIn, arma::vec AccIn, arma::vec AttIn
         , arma::vec ANG_VEL_In, arma::vec ANG_ACC_In, double MIn, arma::vec IIn
         , arma::vec F_In, arma::vec T_In);
-    ~Mobilized_body();
+    ~Mobilized_body() {};
 
     virtual void update(arma::vec PosIn, arma::vec VelIn, arma::vec TBI_QIn
         , arma::vec ANG_VEL_In) override;
 };
 
+typedef boost::shared_ptr<Body> BodyPtr;
 #endif  //BODY_HPP

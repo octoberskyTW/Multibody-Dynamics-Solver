@@ -3,12 +3,15 @@
 #include <armadillo>
 #include "Math.hpp"
 #include "Body.hpp"
+#include <boost/shared_ptr.hpp>
+#include <boost/enable_shared_from_this.hpp>
 
-class Joint
+
+class Joint : public boost::enable_shared_from_this<Joint>
 {
 public:
     Joint(unsigned int TypeIn, arma::vec piIn, arma::vec pjIn, arma::vec qiIn,
-            arma::vec qjIn, Body *i_In, Body *j_In);
+            arma::vec qjIn, BodyPtr i_In, BodyPtr j_In);
     ~Joint() {};
     void Build_C();
     void Build_Cq();
@@ -21,8 +24,8 @@ public:
     arma::vec get_Pi();
     arma::vec get_Pj();
     arma::vec get_CONSTRAINT();
-    Body* get_body_i_ptr();
-    Body* get_body_j_ptr();
+    BodyPtr get_body_i_ptr();
+    BodyPtr get_body_j_ptr();
 
 private:
     unsigned int Type;  
@@ -44,8 +47,9 @@ private:
     arma::vec wj;
     arma::vec Si;
     arma::vec Sj;
-    Body *body_i_ptr;
-    Body *body_j_ptr;
+    BodyPtr body_i_ptr;
+    BodyPtr body_j_ptr;
 };
 
+typedef boost::shared_ptr<Joint> JointPtr;
 #endif  //JOINT_HPP
