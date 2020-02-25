@@ -80,16 +80,23 @@ void Dynamics_Sys::Cal_Constraints() {
 
 void Dynamics_Sys::Assembly() { //Need to be done, Initialization sequence!!!
     BodyPtr i_ptr, j_ptr;
+    arma::mat TIB_i(3, 3, arma::fill::zeros);
+    arma::mat TIB_j(3, 3, arma::fill::zeros);
+
     for (unsigned int i = 0; i < njoint; ++i) {
         i_ptr = Joint_ptr_array[i]->get_body_i_ptr();
         j_ptr = Joint_ptr_array[i]->get_body_j_ptr();
+        j_ptr->set_TBI(j_ptr->get_TBI() * i_ptr->get_TBI());
 
-        j_ptr->set_POSITION(i_ptr->get_POSITION() + Joint_ptr_array[i]->get_Pi()
-            - Joint_ptr_array[i]->get_Pj());
-        // j_ptr->set_ANGLE_VEL(i_ptr->get_ANGLE_VEL() + j_ptr->get_ANGLE_VEL());
-        // j_ptr->set_ANGLE_ACC(i_ptr->get_ANGLE_ACC() + j_ptr->get_ANGLE_ACC());
-        j_ptr->set_VELOCITY(j_ptr->get_VELOCITY() + i_ptr->get_VELOCITY() - skew_sym(j_ptr->get_ANGLE_VEL())
-                    * Joint_ptr_array[i]->get_Pj());
+        TIB_i = trans(i_ptr->get_TBI());
+        TIB_j = trans(j_ptr->get_TBI());
+
+        j_ptr->set_POSITION(i_ptr->get_POSITION() + TIB_i * Joint_ptr_array[i]->get_pi()
+            - TIB_j * Joint_ptr_array[i]->get_pj());
+        j_ptr->set_ANGLE_VEL(trans(j_ptr->get_TBI() * TIB_i) * i_ptr->get_ANGLE_VEL() + j_ptr->get_ANGLE_VEL());
+        j_ptr->set_VELOCITY(TIB_j * j_ptr->get_VELOCITY() + i_ptr->get_VELOCITY() - TIB_j * (skew_sym(j_ptr->get_ANGLE_VEL())
+                    * Joint_ptr_array[i]->get_pj()) + TIB_i * (skew_sym(i_ptr->get_ANGLE_VEL())
+                    * Joint_ptr_array[i]->get_pi())); // V_j_I = TIB_j * V_j_B + V_i_I - TIB_j * w_j_B X p_j + TIB_i * w_i_B X p_i
     }
 }
 

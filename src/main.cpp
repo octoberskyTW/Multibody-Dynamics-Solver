@@ -31,13 +31,12 @@ int main(int argc, char const *argv[])
     arma::vec VEL1 = {0., 0., 0.};
     arma::vec ACC = {0., 0., 0.};
     arma::vec ANG = {-0. * 3.1415926 / 180.0, -0. * 3.1415926 / 180.0, -0. * 3.1415926 / 180.0};
-    arma::vec ANG1 = {-0. * 3.1415926 / 180.0, -0. * 3.1415926 / 180.0, -0. * 3.1415926 / 180.0};
+    arma::vec ANG1 = {-0. * 3.1415926 / 180.0, -3. * 3.1415926 / 180.0, -0. * 3.1415926 / 180.0};
     arma::vec ANG_VEL = {0., 0., 0.};
+    arma::vec ANG_VEL1 = {0., 0., 0.};
     arma::vec ANG_ACC = {0., 0., 0.};
     arma::vec I = {1., 1., 1.};
-    arma::vec F = {0., 0., mass * 9.81};
-    // arma::vec F = {0., 0., 0.0};
-    // arma::vec F1 = {0., 0., -1.0 * mass * 9.81};
+    arma::vec F = {0., 0., 9.8};
     arma::vec T = {0., 0., 0.};
     arma::vec T1 = {0., 0., 0.};
 
@@ -49,8 +48,8 @@ int main(int argc, char const *argv[])
     sys->Add(Rev_joint_1);
     
     Body_prev = Body_1;
-    for (unsigned int i = 0; i < 2; i++) {
-        Body_now = boost::make_shared<Mobilized_body>(i + 2, POS, VEL1, ACC, ANG1, ANG_VEL, ANG_ACC, mass, I, F, T);
+    for (unsigned int i = 0; i < 10; i++) {
+        Body_now = boost::make_shared<Mobilized_body>(i + 2, POS, VEL1, ACC, ANG1, ANG_VEL1, ANG_ACC, mass, I, F, T);
         Rev_joint = boost::make_shared<Joint>(0, pi, pj, qi, qj, Body_prev, Body_now);
 
         sys->Add(Body_now);
@@ -60,12 +59,12 @@ int main(int argc, char const *argv[])
     sys->Assembly();
     sys->init();
 
-    for (unsigned int i = 0; i < 20000; i++) {
+    for (unsigned int i = 0; i < 50000; i++) {
         sys->solve();
         
         time += 0.001;
 
-        if (i % 100 == 0) {
+        if (i % 1 == 0) {
             fout << time << '\t';
             sys->output_data(fout);
         }

@@ -37,7 +37,7 @@ arma::mat skew_sym(arma::vec3 const &vec) {
     RESULT(0, 2) = vec(1);
     RESULT(1, 2) = -vec(0);
     RESULT(2, 2) = 0.0;
-    return RESULT;
+    return std::move(RESULT);
 }
 
 void Matrix2Quaternion(arma::mat33 Matrix_in, arma::vec &Quaternion) {
@@ -95,7 +95,7 @@ void Quaternion2Matrix(arma::vec4 const &Quaternion_in, arma::mat &Matrix_out) {
     Matrix_out(2, 2) = 2. * (Quaternion_in(0) * Quaternion_in(0) + Quaternion_in(3) * Quaternion_in(3)) - 1.;
 }
 
-arma::vec3 euler_angle(arma::mat33 TBD_in)
+arma::vec3 euler_angle(const arma::mat33 &TBD_in)
 {
     double psibdc(0), thtbdc(0), phibdc(0);
     double cthtbd(0);

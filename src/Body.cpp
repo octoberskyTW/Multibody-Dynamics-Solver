@@ -29,12 +29,16 @@ arma::vec Body::get_TBI_Q() { return TBI_Q;}
 arma::vec Body::get_TBID_Q() { return TBID_Q;}
 unsigned int Body::get_num() { return num; }
 
-void Body::set_POSITION(const arma::vec PosIn) { POSITION = PosIn; }
-void Body::set_VELOCITY(const arma::vec VelIn) { VELOCITY = VelIn; }
-void Body::set_ACCELERATION(const arma::vec AccIn) { ACCELERATION = AccIn; }
-void Body::set_ANGLE(const arma::vec AngIn) { ANGLE = AngIn; }
-void Body::set_ANGLE_VEL(const arma::vec AngvelIn) { ANGLE_VEL = AngvelIn; }
-void Body::set_ANGLE_ACC(const arma::vec AngaccIn) { ANGLE_ACC = AngaccIn; }
+void Body::set_POSITION(const arma::vec &PosIn) { POSITION = PosIn; }
+void Body::set_VELOCITY(const arma::vec &VelIn) { VELOCITY = VelIn; }
+void Body::set_ACCELERATION(const arma::vec &AccIn) { ACCELERATION = AccIn; }
+void Body::set_ANGLE(const arma::vec &AngIn) { ANGLE = AngIn; }
+void Body::set_ANGLE_VEL(const arma::vec &AngvelIn) { ANGLE_VEL = AngvelIn; }
+void Body::set_ANGLE_ACC(const arma::vec &AngaccIn) { ANGLE_ACC = AngaccIn; }
+void Body::set_TBI(const arma::mat &TBIIn) { 
+    TBI = TBIIn; 
+    Matrix2Quaternion(TBI, TBI_Q);
+    }
 
 Ground::Ground(unsigned int NumIn) {
     for (unsigned int i = 0; i < 3; i++) {
@@ -44,8 +48,7 @@ Ground::Ground(unsigned int NumIn) {
 
     type = 0;
     num = NumIn;
-
-    build_psi_tht_phi_TM(ANGLE(2), ANGLE(1), ANGLE(0), TBI);
+    TBI.eye();
 }
 
 Mobilized_body::Mobilized_body(unsigned int NumIn, arma::vec PosIn, arma::vec VelIn, arma::vec AccIn, arma::vec AttIn
@@ -69,7 +72,7 @@ Mobilized_body::Mobilized_body(unsigned int NumIn, arma::vec PosIn, arma::vec Ve
     }
 
     build_psi_tht_phi_TM(ANGLE(2), ANGLE(1), ANGLE(0), TBI);
-     Matrix2Quaternion(TBI, TBI_Q);
+    Matrix2Quaternion(TBI, TBI_Q);
     POSITION = trans(TBI) * POSITION;
     VELOCITY = trans(TBI) * VELOCITY;
     ACCELERATION = trans(TBI) * ACCELERATION;

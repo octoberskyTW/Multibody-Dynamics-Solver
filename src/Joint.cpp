@@ -78,6 +78,8 @@ arma::vec Joint::get_CONSTRAINT() { return CONSTRAINT; }
 arma::vec Joint::get_GAMMA() { return GAMMA; }
 arma::vec Joint::get_Pi() { return Pi; }
 arma::vec Joint::get_Pj() { return Pj; }
+arma::vec Joint::get_pi() { return pi; }
+arma::vec Joint::get_pj() { return pj; }
 BodyPtr Joint::get_body_i_ptr() { return body_i_ptr; };
 BodyPtr Joint::get_body_j_ptr() { return body_j_ptr; };
 

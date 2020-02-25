@@ -23,6 +23,8 @@ public:
     arma::vec get_GAMMA();
     arma::vec get_Pi();
     arma::vec get_Pj();
+    arma::vec get_pi();
+    arma::vec get_pj();
     arma::vec get_CONSTRAINT();
     BodyPtr get_body_i_ptr();
     BodyPtr get_body_j_ptr();

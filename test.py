@@ -7,7 +7,6 @@ import sys
 import pandas as pd
 from mpl_toolkits.mplot3d import Axes3D
 
-
 class plot_window(QtWidgets.QDialog):
 
     def __init__(self,parent=None):
@@ -31,13 +30,16 @@ class plot_window(QtWidgets.QDialog):
         self.main_layout.addWidget(self.import_button)
         self.main_layout.addWidget(self.plot_button)
         self.window.setLayout(self.main_layout)
+        self.i = 1
 
     def import_csv(self):
         self.fileName_choose, self.filetype = QtWidgets.QFileDialog.getOpenFileName(self, "Find Files", QtCore.QDir.currentPath(), 'CSV (*.csv)')
         self.csv = pd.read_csv(self.fileName_choose, sep='\s+')
         self.nbody = int(((len(self.csv.columns) - 1) / 3))
         self.timeticks = int(len(self.csv))
+        
     def plot(self):
+        self.ax.clear()
         for i in range(1, self.timeticks):
             x = [0]
             y = [0]
