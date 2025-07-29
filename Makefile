@@ -4,8 +4,8 @@ EXEC = main
 INCLUDE = include
 CXX = g++
 
-CXXFLAGS = -Iinclude -Wall -g -std=c++14
-LDFLAGS = -larmadillo
+CXXFLAGS = -Iinclude -I/opt/homebrew/include -Wall -g -std=c++14
+LDFLAGS = -L/opt/homebrew/lib -larmadillo
 
 .PHONY: run obj clean distclean
 

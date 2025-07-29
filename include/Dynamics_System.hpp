@@ -3,13 +3,13 @@
 
 #include "Body.hpp"
 #include "Joint.hpp"
+
 #include <vector>
 
-class Dynamics_Sys
-{
-public:
+class Dynamics_Sys {
+  public:
     Dynamics_Sys(double dt_In);
-    ~Dynamics_Sys() {};
+    ~Dynamics_Sys(){};
 
     void Add(BodyPtr bodyPtr_In);
     void Add(JointPtr jointPtr_In);
@@ -17,14 +17,16 @@ public:
     void Assembly();
     void init();
     void solve();
-    void output_data(std::ofstream &fout_In);
+    void output_data(std::ofstream& fout_In);
 
     unsigned int get_nbody();
     unsigned int get_njoint();
 
-    
-private:
-    void dynamic_function(std::vector<arma::vec> qIn, std::vector<arma::vec> &qdOut);
+    std::vector<arma::vec> get_body_positions();
+    std::vector<arma::vec> get_body_angles();
+
+  private:
+    void dynamic_function(std::vector<arma::vec> qIn, std::vector<arma::vec>& qdOut);
 
     double dt;
     unsigned int nbody;
@@ -40,7 +42,7 @@ private:
     arma::mat SYS_M;
 
     std::vector<BodyPtr> Body_ptr_array;
-    std::vector<JointPtr> Joint_ptr_array; 
+    std::vector<JointPtr> Joint_ptr_array;
 };
 
-#endif  //DYNAMICS_HPP
+#endif // DYNAMICS_HPP

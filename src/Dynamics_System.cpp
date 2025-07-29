@@ -52,15 +52,17 @@ void Dynamics_Sys::Cal_Constraints() {
     }
 
     for (unsigned int i = 1; i < nbody; i++) {
-        SYS_M = arma::join_cols(arma::join_rows(SYS_M, arma::zeros<arma::mat>(6 * i, 6)), 
+        SYS_M = arma::join_cols(
+            arma::join_rows(SYS_M, arma::zeros<arma::mat>(6 * i, 6)),
             arma::join_rows(arma::zeros<arma::mat>(6, 6 * i), Body_ptr_array[i]->get_M()));
     }
 
     arma::vec tmp_vec;
 
     for (auto it_body = Body_ptr_array.begin(); it_body != Body_ptr_array.end(); it_body++) {
-        
-        tmp_vec = arma::join_cols(tmp_vec, arma::join_cols((*it_body)->get_FORCE(), (*it_body)->get_TORQUE()));
+
+        tmp_vec = arma::join_cols(
+            tmp_vec, arma::join_cols((*it_body)->get_FORCE(), (*it_body)->get_TORQUE()));
     }
 
     arma::vec tmp_vec2;
@@ -74,11 +76,12 @@ void Dynamics_Sys::Cal_Constraints() {
 
     SYS_RHS = arma::join_cols(tmp_vec, SYS_GAMMA);
 
-    SYS_MAT = arma::join_cols(arma::join_rows(SYS_M, trans(SYS_Cq)), 
-        arma::join_rows(SYS_Cq, arma::zeros<arma::mat>(SYS_Cq.n_rows, SYS_Cq.n_rows))); 
+    SYS_MAT = arma::join_cols(
+        arma::join_rows(SYS_M, trans(SYS_Cq)),
+        arma::join_rows(SYS_Cq, arma::zeros<arma::mat>(SYS_Cq.n_rows, SYS_Cq.n_rows)));
 }
 
-void Dynamics_Sys::Assembly() { //Need to be done, Initialization sequence!!!
+void Dynamics_Sys::Assembly() { // Need to be done, Initialization sequence!!!
     BodyPtr i_ptr, j_ptr;
     arma::mat TIB_i(3, 3, arma::fill::zeros);
     arma::mat TIB_j(3, 3, arma::fill::zeros);
@@ -91,12 +94,16 @@ void Dynamics_Sys::Assembly() { //Need to be done, Initialization sequence!!!
         TIB_i = trans(i_ptr->get_TBI());
         TIB_j = trans(j_ptr->get_TBI());
 
-        j_ptr->set_POSITION(i_ptr->get_POSITION() + TIB_i * Joint_ptr_array[i]->get_pi()
-            - TIB_j * Joint_ptr_array[i]->get_pj());
-        j_ptr->set_ANGLE_VEL(trans(j_ptr->get_TBI() * TIB_i) * i_ptr->get_ANGLE_VEL() + j_ptr->get_ANGLE_VEL());
-        j_ptr->set_VELOCITY(TIB_j * j_ptr->get_VELOCITY() + i_ptr->get_VELOCITY() - TIB_j * (skew_sym(j_ptr->get_ANGLE_VEL())
-                    * Joint_ptr_array[i]->get_pj()) + TIB_i * (skew_sym(i_ptr->get_ANGLE_VEL())
-                    * Joint_ptr_array[i]->get_pi())); // V_j_I = TIB_j * V_j_B + V_i_I - TIB_j * w_j_B X p_j + TIB_i * w_i_B X p_i
+        j_ptr->set_POSITION(i_ptr->get_POSITION() + TIB_i * Joint_ptr_array[i]->get_pi() -
+                            TIB_j * Joint_ptr_array[i]->get_pj());
+        j_ptr->set_ANGLE_VEL(trans(j_ptr->get_TBI() * TIB_i) * i_ptr->get_ANGLE_VEL() +
+                             j_ptr->get_ANGLE_VEL());
+        j_ptr->set_VELOCITY(
+            TIB_j * j_ptr->get_VELOCITY() + i_ptr->get_VELOCITY() -
+            TIB_j * (skew_sym(j_ptr->get_ANGLE_VEL()) * Joint_ptr_array[i]->get_pj()) +
+            TIB_i * (skew_sym(i_ptr->get_ANGLE_VEL()) *
+                     Joint_ptr_array[i]->get_pi())); // V_j_I = TIB_j * V_j_B + V_i_I - TIB_j *
+                                                     // w_j_B X p_j + TIB_i * w_i_B X p_i
     }
 }
 
@@ -121,36 +128,35 @@ void Dynamics_Sys::solve() {
     std::vector<arma::vec> k2(q.size());
     std::vector<arma::vec> k3(q.size());
     std::vector<arma::vec> k4(q.size());
-    
+
     q_temp = q;
 
     dynamic_function(q_temp, k1);
     for (unsigned int i = 0; i < q_temp.size(); i++) {
-        q_temp[i] = q[i] + 0.5 * dt * k1[i];        
+        q_temp[i] = q[i] + 0.5 * dt * k1[i];
     }
 
     dynamic_function(q_temp, k2);
     for (unsigned int i = 0; i < q_temp.size(); i++) {
-        q_temp[i] = q[i] + 0.5 * dt * k2[i];        
-    }    
+        q_temp[i] = q[i] + 0.5 * dt * k2[i];
+    }
 
     dynamic_function(q_temp, k3);
     for (unsigned int i = 0; i < q_temp.size(); i++) {
-        q_temp[i] = q[i] + dt * k3[i];        
-    } 
+        q_temp[i] = q[i] + dt * k3[i];
+    }
 
     dynamic_function(q_temp, k4);
     for (unsigned int i = 0; i < q_temp.size(); i++) {
         q_d[i] = (1.0 / 6.0) * (k1[i] + 2.0 * k2[i] + 2.0 * k3[i] + k4[i]);
-        q[i] = q[i] + q_d[i] * dt;        
-    } 
+        q[i] = q[i] + q_d[i] * dt;
+    }
     // std::cout << "POS:" << '\t' << q[4](0) << '\t' << q[4](1) << '\t' << q[4](2) << '\t';
     // std::cout << "ANG:" << '\t' << q[7](0) * 180.0 / 3.1415926 << '\t'
     //      << q[7](1) * 180.0 / 3.1415926 << '\t' << q[7](2) * 180.0 / 3.1415926 << std::endl;
-
 }
 
-void Dynamics_Sys::dynamic_function(std::vector<arma::vec> qIn, std::vector<arma::vec> &qdOut) {
+void Dynamics_Sys::dynamic_function(std::vector<arma::vec> qIn, std::vector<arma::vec>& qdOut) {
 
     for (unsigned int i = 0; i < nbody; i++) {
         Body_ptr_array[i]->update(qIn[i * 4], qIn[(i * 4) + 1], qIn[(i * 4) + 2], qIn[(i * 4) + 3]);
@@ -176,7 +182,7 @@ void Dynamics_Sys::dynamic_function(std::vector<arma::vec> qIn, std::vector<arma
 
     for (unsigned int i = 0; i < nbody; i++) {
         qdOut[(i * 4)] = qIn[(i * 4) + 1];
-        qdOut[(i * 4) + 1] = ANS.subvec((i * 6), (i * 6)+2);
+        qdOut[(i * 4) + 1] = ANS.subvec((i * 6), (i * 6) + 2);
         qdOut[(i * 4) + 2] = Body_ptr_array[i]->get_TBID_Q();
         qdOut[(i * 4) + 3] = ANS.subvec((i * 6) + 3, (i * 6) + 5);
     }
@@ -188,7 +194,7 @@ void Dynamics_Sys::dynamic_function(std::vector<arma::vec> qIn, std::vector<arma
     //     std::cout << std::endl;
     // }
 }
-void Dynamics_Sys::output_data(std::ofstream &fout_In) {
+void Dynamics_Sys::output_data(std::ofstream& fout_In) {
     // arma::vec3 v_temp;
     for (unsigned int i = 1; i < nbody; i++) {
         // v_temp = Joint_ptr_array[i - 1]->get_Pj();
@@ -197,5 +203,25 @@ void Dynamics_Sys::output_data(std::ofstream &fout_In) {
     fout_In << std::endl;
 }
 
-unsigned int Dynamics_Sys::get_nbody() { return nbody; }
-unsigned int Dynamics_Sys::get_njoint() { return njoint; }
+unsigned int Dynamics_Sys::get_nbody() {
+    return nbody;
+}
+unsigned int Dynamics_Sys::get_njoint() {
+    return njoint;
+}
+
+std::vector<arma::vec> Dynamics_Sys::get_body_positions() {
+    std::vector<arma::vec> positions;
+    for (unsigned int i = 0; i < nbody; i++) {
+        positions.push_back(Body_ptr_array[i]->get_POSITION());
+    }
+    return positions;
+}
+
+std::vector<arma::vec> Dynamics_Sys::get_body_angles() {
+    std::vector<arma::vec> angles;
+    for (unsigned int i = 0; i < nbody; i++) {
+        angles.push_back(Body_ptr_array[i]->get_ANGLE());
+    }
+    return angles;
+}

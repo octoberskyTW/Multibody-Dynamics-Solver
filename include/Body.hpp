@@ -1,14 +1,13 @@
 #ifndef BODY_HPP
 #define BODY_HPP
 
-#include <armadillo>
 #include "Math.hpp"
-#include <boost/shared_ptr.hpp>
-#include <boost/enable_shared_from_this.hpp>
 
-class Body : public boost::enable_shared_from_this<Body>
-{
-public:
+#include <armadillo>
+#include <memory>
+
+class Body : public std::enable_shared_from_this<Body> {
+  public:
     Body();
     virtual ~Body() = default;
 
@@ -26,20 +25,19 @@ public:
     arma::vec get_TBID_Q();
     unsigned int get_num();
 
-    void set_POSITION(const arma::vec &PosIn);
-    void set_VELOCITY(const arma::vec &VelIn);
-    void set_ACCELERATION(const arma::vec &AccIn);
-    void set_ANGLE(const arma::vec &AngIn);
-    void set_ANGLE_VEL(const arma::vec &AngvelIn);
-    void set_ANGLE_ACC(const arma::vec &AngaccIn);
-    void set_TBI(const arma::mat &TBIIn);
+    void set_POSITION(const arma::vec& PosIn);
+    void set_VELOCITY(const arma::vec& VelIn);
+    void set_ACCELERATION(const arma::vec& AccIn);
+    void set_ANGLE(const arma::vec& AngIn);
+    void set_ANGLE_VEL(const arma::vec& AngvelIn);
+    void set_ANGLE_ACC(const arma::vec& AngaccIn);
+    void set_TBI(const arma::mat& TBIIn);
 
-    virtual void update(arma::vec PosIn, arma::vec VelIn, arma::vec AttIn
-        , arma::vec ANG_VEL_In) = 0;
+    virtual void update(arma::vec PosIn, arma::vec VelIn, arma::vec AttIn,
+                        arma::vec ANG_VEL_In) = 0;
 
-protected:
-
-    unsigned int type;  // type define   0: Ground body, 1: Mobilized body
+  protected:
+    unsigned int type; // type define   0: Ground body, 1: Mobilized body
     unsigned int num;  // No. body
 
     arma::vec POSITION;
@@ -57,26 +55,23 @@ protected:
     arma::vec TBID_Q;
 };
 
-class Ground : public Body
-{
-public:
+class Ground : public Body {
+  public:
     Ground(unsigned int NumIn);
-    ~Ground() {};
-    virtual void update(arma::vec PosIn, arma::vec VelIn, arma::vec AttIn
-        , arma::vec ANG_VEL_In) {};
+    ~Ground(){};
+    virtual void update(arma::vec PosIn, arma::vec VelIn, arma::vec AttIn, arma::vec ANG_VEL_In){};
 };
 
-class Mobilized_body : public Body
-{
-public:
-    Mobilized_body(unsigned int NumIn, arma::vec PosIn, arma::vec VelIn, arma::vec AccIn, arma::vec AttIn
-        , arma::vec ANG_VEL_In, arma::vec ANG_ACC_In, double MIn, arma::vec IIn
-        , arma::vec F_In, arma::vec T_In);
-    ~Mobilized_body() {};
+class Mobilized_body : public Body {
+  public:
+    Mobilized_body(unsigned int NumIn, arma::vec PosIn, arma::vec VelIn, arma::vec AccIn,
+                   arma::vec AttIn, arma::vec ANG_VEL_In, arma::vec ANG_ACC_In, double MIn,
+                   arma::vec IIn, arma::vec F_In, arma::vec T_In);
+    ~Mobilized_body(){};
 
-    virtual void update(arma::vec PosIn, arma::vec VelIn, arma::vec TBI_QIn
-        , arma::vec ANG_VEL_In) override;
+    virtual void update(arma::vec PosIn, arma::vec VelIn, arma::vec TBI_QIn,
+                        arma::vec ANG_VEL_In) override;
 };
 
-typedef boost::shared_ptr<Body> BodyPtr;
-#endif  //BODY_HPP
+typedef std::shared_ptr<Body> BodyPtr;
+#endif // BODY_HPP

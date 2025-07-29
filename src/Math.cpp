@@ -1,10 +1,12 @@
 #include "Math.hpp"
+
 #include <algorithm>
 
-#define PI 3.1415926536  ///< circumference of unit diameter circle
+#define PI 3.1415926536 ///< circumference of unit diameter circle
 #define EPS 1.e-10      ///< machine precision error (type double)
 
-void build_psi_tht_phi_TM(const double &psi, const double &tht, const double &phi, arma::mat &AMAT) {
+void build_psi_tht_phi_TM(const double& psi, const double& tht, const double& phi,
+                          arma::mat& AMAT) {
     double spsi = sin(psi);
     double cpsi = cos(psi);
     double stht = sin(tht);
@@ -25,7 +27,7 @@ void build_psi_tht_phi_TM(const double &psi, const double &tht, const double &ph
     return;
 }
 
-arma::mat skew_sym(arma::vec3 const &vec) {
+arma::mat skew_sym(arma::vec3 const& vec) {
     arma::mat33 RESULT;
 
     RESULT(0, 0) = 0.0;
@@ -40,7 +42,7 @@ arma::mat skew_sym(arma::vec3 const &vec) {
     return std::move(RESULT);
 }
 
-void Matrix2Quaternion(arma::mat33 Matrix_in, arma::vec &Quaternion) {
+void Matrix2Quaternion(arma::mat33 Matrix_in, arma::vec& Quaternion) {
     arma::vec4 q_square;
     double q_square_max;
     int j;
@@ -54,49 +56,57 @@ void Matrix2Quaternion(arma::mat33 Matrix_in, arma::vec &Quaternion) {
     j = q_square.index_max();
 
     switch (j) {
-    case 0:
-        Quaternion(0) = 0.5 * sqrt(q_square_max);
-        Quaternion(1) = 0.25 * (Matrix_in(2, 1) - Matrix_in(1, 2)) / Quaternion[0];
-        Quaternion(2) = 0.25 * (Matrix_in(0, 2) - Matrix_in(2, 0)) / Quaternion[0];
-        Quaternion(3) = 0.25 * (Matrix_in(1, 0) - Matrix_in(0, 1)) / Quaternion[0];
-        break;
-    case 1:
-        Quaternion(1) = 0.5 * sqrt(q_square_max);
-        Quaternion(0) = 0.25 * (Matrix_in(2, 1) - Matrix_in(1, 2)) / Quaternion[1];
-        Quaternion(2) = 0.25 * (Matrix_in(1, 0) + Matrix_in(0, 1)) / Quaternion[1];
-        Quaternion(3) = 0.25 * (Matrix_in(0, 2) + Matrix_in(2, 0)) / Quaternion[1];
-        break;
-    case 2:
-        Quaternion(2) = 0.5 * sqrt(q_square_max);
-        Quaternion(0) = 0.25 * (Matrix_in(0, 2) - Matrix_in(2, 0)) / Quaternion[2];
-        Quaternion(1) = 0.25 * (Matrix_in(1, 0) + Matrix_in(0, 1)) / Quaternion[2];
-        Quaternion(3) = 0.25 * (Matrix_in(2, 1) + Matrix_in(1, 2)) / Quaternion[2];
-        break;
-    case 3:
-        Quaternion(3) = 0.5 * sqrt(q_square_max);
-        Quaternion(0) = 0.25 * (Matrix_in(1, 0) - Matrix_in(0, 1)) / Quaternion[3];
-        Quaternion(1) = 0.25 * (Matrix_in(2, 0) + Matrix_in(0, 2)) / Quaternion[3];
-        Quaternion(2) = 0.25 * (Matrix_in(2, 1) + Matrix_in(1, 2)) / Quaternion[3];
-        break;
+        case 0:
+            Quaternion(0) = 0.5 * sqrt(q_square_max);
+            Quaternion(1) = 0.25 * (Matrix_in(2, 1) - Matrix_in(1, 2)) / Quaternion[0];
+            Quaternion(2) = 0.25 * (Matrix_in(0, 2) - Matrix_in(2, 0)) / Quaternion[0];
+            Quaternion(3) = 0.25 * (Matrix_in(1, 0) - Matrix_in(0, 1)) / Quaternion[0];
+            break;
+        case 1:
+            Quaternion(1) = 0.5 * sqrt(q_square_max);
+            Quaternion(0) = 0.25 * (Matrix_in(2, 1) - Matrix_in(1, 2)) / Quaternion[1];
+            Quaternion(2) = 0.25 * (Matrix_in(1, 0) + Matrix_in(0, 1)) / Quaternion[1];
+            Quaternion(3) = 0.25 * (Matrix_in(0, 2) + Matrix_in(2, 0)) / Quaternion[1];
+            break;
+        case 2:
+            Quaternion(2) = 0.5 * sqrt(q_square_max);
+            Quaternion(0) = 0.25 * (Matrix_in(0, 2) - Matrix_in(2, 0)) / Quaternion[2];
+            Quaternion(1) = 0.25 * (Matrix_in(1, 0) + Matrix_in(0, 1)) / Quaternion[2];
+            Quaternion(3) = 0.25 * (Matrix_in(2, 1) + Matrix_in(1, 2)) / Quaternion[2];
+            break;
+        case 3:
+            Quaternion(3) = 0.5 * sqrt(q_square_max);
+            Quaternion(0) = 0.25 * (Matrix_in(1, 0) - Matrix_in(0, 1)) / Quaternion[3];
+            Quaternion(1) = 0.25 * (Matrix_in(2, 0) + Matrix_in(0, 2)) / Quaternion[3];
+            Quaternion(2) = 0.25 * (Matrix_in(2, 1) + Matrix_in(1, 2)) / Quaternion[3];
+            break;
     }
 
-    return ;
+    return;
 }
 
-void Quaternion2Matrix(arma::vec4 const &Quaternion_in, arma::mat &Matrix_out) {
-    Matrix_out(0, 0) = 2. * (Quaternion_in(0) * Quaternion_in(0) + Quaternion_in(1) * Quaternion_in(1)) - 1.;
-    Matrix_out(0, 1) = 2. * (Quaternion_in(1) * Quaternion_in(2) + Quaternion_in(0) * Quaternion_in(3));
-    Matrix_out(0, 2) = 2. * (Quaternion_in(1) * Quaternion_in(3) - Quaternion_in(0) * Quaternion_in(2));
-    Matrix_out(1, 0) = 2. * (Quaternion_in(1) * Quaternion_in(2) - Quaternion_in(0) * Quaternion_in(3));
-    Matrix_out(1, 1) = 2. * (Quaternion_in(0) * Quaternion_in(0) + Quaternion_in(2) * Quaternion_in(2)) - 1.;
-    Matrix_out(1, 2) = 2. * (Quaternion_in(2) * Quaternion_in(3) + Quaternion_in(0) * Quaternion_in(1));
-    Matrix_out(2, 0) = 2. * (Quaternion_in(1) * Quaternion_in(3) + Quaternion_in(0) * Quaternion_in(2));
-    Matrix_out(2, 1) = 2. * (Quaternion_in(2) * Quaternion_in(3) - Quaternion_in(0) * Quaternion_in(1));
-    Matrix_out(2, 2) = 2. * (Quaternion_in(0) * Quaternion_in(0) + Quaternion_in(3) * Quaternion_in(3)) - 1.;
+void Quaternion2Matrix(arma::vec4 const& Quaternion_in, arma::mat& Matrix_out) {
+    Matrix_out(0, 0) =
+        2. * (Quaternion_in(0) * Quaternion_in(0) + Quaternion_in(1) * Quaternion_in(1)) - 1.;
+    Matrix_out(0, 1) =
+        2. * (Quaternion_in(1) * Quaternion_in(2) + Quaternion_in(0) * Quaternion_in(3));
+    Matrix_out(0, 2) =
+        2. * (Quaternion_in(1) * Quaternion_in(3) - Quaternion_in(0) * Quaternion_in(2));
+    Matrix_out(1, 0) =
+        2. * (Quaternion_in(1) * Quaternion_in(2) - Quaternion_in(0) * Quaternion_in(3));
+    Matrix_out(1, 1) =
+        2. * (Quaternion_in(0) * Quaternion_in(0) + Quaternion_in(2) * Quaternion_in(2)) - 1.;
+    Matrix_out(1, 2) =
+        2. * (Quaternion_in(2) * Quaternion_in(3) + Quaternion_in(0) * Quaternion_in(1));
+    Matrix_out(2, 0) =
+        2. * (Quaternion_in(1) * Quaternion_in(3) + Quaternion_in(0) * Quaternion_in(2));
+    Matrix_out(2, 1) =
+        2. * (Quaternion_in(2) * Quaternion_in(3) - Quaternion_in(0) * Quaternion_in(1));
+    Matrix_out(2, 2) =
+        2. * (Quaternion_in(0) * Quaternion_in(0) + Quaternion_in(3) * Quaternion_in(3)) - 1.;
 }
 
-arma::vec3 euler_angle(const arma::mat33 &TBD_in)
-{
+arma::vec3 euler_angle(const arma::mat33& TBD_in) {
     double psibdc(0), thtbdc(0), phibdc(0);
     double cthtbd(0);
 
@@ -147,8 +157,7 @@ arma::vec3 euler_angle(const arma::mat33 &TBD_in)
     return euler_ang;
 }
 
-int sign(const double &variable)
-{
+int sign(const double& variable) {
     int sign = 0;
     if (variable < 0.)
         sign = -1;

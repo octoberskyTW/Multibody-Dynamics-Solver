@@ -1,0 +1,13 @@
+# Python requirements for Multibody Dynamics Solver GUI
+PySide6>=6.0.0
+
+# Optional dependencies for animation export
+Pillow>=8.0.0  # For GIF animation export
+numpy>=1.19.0  # For advanced GIF export (optional)
+
+# Development dependencies
+pytest>=6.0.0  # Testing framework
+pytest-cov>=2.0.0  # Coverage reporting
+flake8>=4.0.0  # Python linting
+black>=22.0.0  # Python code formatting (alternative to flake8)
+isort>=5.0.0  # Import sorting
